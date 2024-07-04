@@ -1,30 +1,30 @@
-import { createUser } from '@/db/user.db'
 import { User } from '@prisma/client'
-import { useAtom } from 'jotai'
+import { Form, useSearchParams } from '@remix-run/react'
+import { useSetAtom } from 'jotai'
 import _ from 'lodash'
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useRemixForm } from 'remix-hook-form'
 import userAtom from '../state/user'
 import { Button } from './ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
 
 type UserPanelProps = {
   users: User[]
 }
 
 const UserPanel = ({ users }: UserPanelProps) => {
-  // const { allUsers, createUser } = useUserApi()
-  const [, setUser] = useAtom(userAtom)
-  const [name, setName] = useState('')
-  const [open, setOpen] = useState(false)
+  const setUser = useSetAtom(userAtom)
   const navigate = useNavigate()
-
-  const onModalConfirm = async () => {
-    if (!name) {
-      return
-    }
-    await createUser({ name })
-    setOpen(false)
-  }
+  const [params, setSearchParams] = useSearchParams()
 
   const selectUser = (id: number) => {
     const user = _.find(users, { id })
@@ -33,6 +33,15 @@ const UserPanel = ({ users }: UserPanelProps) => {
       navigate('/')
     }
   }
+
+  const {
+    handleSubmit,
+    reset,
+    register,
+    formState: { errors },
+  } = useRemixForm<Partial<User>>({
+    mode: 'onSubmit',
+  })
 
   return (
     <div className='m-[10%]'>
@@ -47,25 +56,38 @@ const UserPanel = ({ users }: UserPanelProps) => {
             {name}
           </Button>
         ))}
-        <Button
-          className='text-center w-32 mx-2 py-12 border border-slate-300 rounded-3xl hover:shadow-lg transition-shadow cursor-pointer'
-          onClick={() => setOpen(true)}
+        <Dialog
+          onOpenChange={open => {
+            reset()
+            setSearchParams(open ? { newUser: 'true' } : {})
+          }}
+          open={!!params.get('newUser')}
         >
-          +
-        </Button>
+          <DialogTrigger asChild>
+            <Button
+              variant='outline'
+              className='text-center w-32 mx-2 py-12 border border-slate-300 rounded-3xl hover:shadow-lg transition-shadow cursor-pointer'
+            >
+              +
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <Form method='post' onSubmit={handleSubmit}>
+              <DialogHeader>
+                <DialogTitle>New User</DialogTitle>
+              </DialogHeader>
+              <Label>
+                Name:
+                <Input type='text' {...register('name')} />
+                {errors.name && <p>{errors.name.message}</p>}
+              </Label>
+              <DialogFooter>
+                <Button type='submit'>Save changes</Button>
+              </DialogFooter>
+            </Form>
+          </DialogContent>
+        </Dialog>
       </div>
-      {/* <Modal
-        title='New User'
-        open={open}
-        onOk={onModalConfirm}
-        onCancel={() => setOpen(false)}
-        okButtonProps={{ disabled: !name }}
-      >
-        <div className='flex items-center'>
-          <div className='pr-2'>Name:</div>
-          <Input value={name} onChange={({ target }) => setName(target.value)} />
-        </div>
-      </Modal> */}
     </div>
   )
 }
