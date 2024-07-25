@@ -34,7 +34,7 @@ type TooltipProps = React.ComponentProps<typeof TooltipContent> & {
 const Tooltip = ({ children, content }: TooltipProps) => {
   return (
     <TooltipProvider>
-      <TooltipRoot>
+      <TooltipRoot delayDuration={100}>
         <TooltipTrigger asChild>
           <Button variant='outline'>{children}</Button>
         </TooltipTrigger>
