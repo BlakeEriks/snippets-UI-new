@@ -18,9 +18,9 @@ import { Copy, Edit2, Heart, Undo2, X } from 'lucide-react'
 import { useState } from 'react'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  await requireUserId(request)
+  const userId = await requireUserId(request)
   const { bookId } = params
-  const books = await getBooks()
+  const books = await getBooks(userId)
 
   if (!bookId) return redirect(`/books/${books[0].id}`)
 
