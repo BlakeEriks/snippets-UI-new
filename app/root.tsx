@@ -5,13 +5,18 @@ import {
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
+  useLoaderData,
   useRouteError,
 } from '@remix-run/react'
 
 import { ThemeSwitcherSafeHTML, ThemeSwitcherScript } from '@/components/theme-switcher'
 
+import { LoaderFunction, json } from '@remix-run/node'
 import Header from './components/Header'
 import './globals.css'
+import { getUser } from './session.server'
+
+export const loader: LoaderFunction = async ({ request }) => json({ user: await getUser(request) })
 
 function App({ children }: { children: React.ReactNode }) {
   return (
@@ -24,7 +29,6 @@ function App({ children }: { children: React.ReactNode }) {
         <ThemeSwitcherScript />
       </head>
       <body>
-        <Header />
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -34,8 +38,11 @@ function App({ children }: { children: React.ReactNode }) {
 }
 
 export default function Root() {
+  const { user } = useLoaderData<typeof loader>()
+
   return (
     <App>
+      <Header user={user} />
       <Outlet />
     </App>
   )

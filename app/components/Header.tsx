@@ -1,14 +1,18 @@
 import { cn } from '@/lib/styles'
 import { modalStateAtom } from '@/state/modal'
-import userAtom from '@/state/user'
+import { User } from '@prisma/client'
 import { Link, useLocation } from '@remix-run/react'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useSetAtom } from 'jotai'
 import { ArrowLeftRight, PlusIcon, SmileIcon, UploadIcon } from 'lucide-react'
 import { Tooltip } from './ui/tooltip'
 
-const Header = () => {
-  const user = useAtomValue(userAtom)
+const Header = ({ user }: { user: User }) => {
+  // console.log(useLoaderData())
+  // const { user } = { name: 'b' }
+  // const { user } = useLoaderData<typeof loader>()
   const { pathname } = useLocation()
+
+  console.log(user)
 
   // const { handleUpload, dummyRequest } = useFileUpload()
   // const location = window.location.pathname
@@ -43,6 +47,7 @@ const Header = () => {
         </Tooltip>
         <Link to='users'>
           <Tooltip content='Change User'>
+            {/* {user ? 'user' : <SmileIcon />} */}
             {user ? user.name[0].toUpperCase() : <SmileIcon />}
           </Tooltip>
         </Link>
