@@ -1,12 +1,12 @@
 import { Book, Prisma, Quote } from '@prisma/client'
-import { find, map } from 'lodash'
+import _ from 'lodash'
 import prisma from './client.db'
 
 export const saveSnippetsDotTxt = async (quotes: Quote[]) => {
   const allBooks = await prisma.book.findMany()
-  const sourceStrings = new Set<string>(map(quotes, 'source') as string[])
+  const sourceStrings = new Set<string>(_.map(quotes, 'source') as string[])
   const allQuotesCreatedAts = new Set(
-    map(await prisma.quote.findMany(), ({ createdAt }) => createdAt.toISOString())
+    _.map(await prisma.quote.findMany(), ({ createdAt }) => createdAt.toISOString())
   )
 
   // Create books from source strings if they don't yet exist
@@ -42,7 +42,7 @@ export const saveSnippetsDotTxt = async (quotes: Quote[]) => {
   const savedQuotes = quotes
     .filter(({ createdAt }) => !allQuotesCreatedAts.has(createdAt.toISOString()))
     .map(({ createdAt, meta, content, source, user }: any): Prisma.QuoteCreateInput => {
-      const { id } = find(allBooks, { source }) as Book
+      const { id } = _.find(allBooks, { source }) as Book
 
       return {
         createdAt: new Date(createdAt),
@@ -68,36 +68,47 @@ export const saveSnippetsDotTxt = async (quotes: Quote[]) => {
   return results.filter(Boolean)
 }
 
-export const toggleFavorite = async (quoteId: number, userId: number) => {
+export const getFavorites = (userId: number) =>
+  prisma.userFavorite
+    .findMany({
+      select: {
+        quoteId: true,
+      },
+      where: {
+        userId,
+      },
+    })
+    .then(favorites => _.map(favorites, 'quoteId'))
+
+export const toggleFavorite = async (userId: number, quoteId: number) => {
   const favorite = await prisma.userFavorite.findUnique({
     where: {
       userId_quoteId: {
-        quoteId,
         userId,
+        quoteId,
       },
     },
   })
 
-  if (favorite) {
-    return await addFavorite(quoteId, userId)
-  }
-  return await removeFavorite(quoteId, userId)
+  const method = favorite ? removeFavorite : addFavorite
+
+  return method(userId, quoteId)
 }
 
-const removeFavorite = async (quoteId: number, userId: number) =>
+const removeFavorite = async (userId: number, quoteId: number) =>
   prisma.userFavorite.delete({
     where: {
       userId_quoteId: {
-        quoteId,
         userId,
+        quoteId,
       },
     },
   })
 
-const addFavorite = async (quoteId: number, userId: number) =>
+const addFavorite = async (userId: number, quoteId: number) =>
   prisma.userFavorite.create({
     data: {
-      quoteId,
       userId,
+      quoteId,
     },
   })

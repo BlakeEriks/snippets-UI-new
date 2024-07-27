@@ -26,8 +26,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const books = await getBooks(userId)
   const { bookId } = params
 
-  console.log('books', books, !books)
-
   if (!books.length) {
     throw new Response('No books found', { status: 404 })
   }

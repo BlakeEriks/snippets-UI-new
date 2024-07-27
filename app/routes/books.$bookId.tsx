@@ -1,17 +1,10 @@
 import { Button } from '@/components/ui/button'
 import { getBooks } from '@/db/book.db'
+import { getFavorites, toggleFavorite } from '@/db/quote.db'
 import { cn } from '@/lib/styles'
 import { requireUserId } from '@/session.server'
 import { ActionFunction, LoaderFunctionArgs } from '@remix-run/node'
-import {
-  Form,
-  json,
-  redirect,
-  useLoaderData,
-  useNavigate,
-  useParams,
-  useSubmit,
-} from '@remix-run/react'
+import { Form, json, redirect, useLoaderData, useNavigate, useSubmit } from '@remix-run/react'
 import _ from 'lodash'
 import { Copy, Edit2, Heart, Undo2, X } from 'lucide-react'
 import { useCallback, useState } from 'react'
@@ -21,10 +14,12 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
   const { bookId } = params
   const books = await getBooks(userId)
+  const favorites = await getFavorites(userId)
 
   if (!bookId) return redirect(`/books/${books[0].id}`)
 
   const book = books.find(book => book.id === Number(bookId))
+
   if (!book) {
     throw new Response(null, {
       status: 404,
@@ -32,19 +27,22 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     })
   }
 
-  return json({ book })
+  return json({ book, favorites })
 }
 
 export const action: ActionFunction = async ({ request, params }) => {
+  const userId = await requireUserId(request)
+
   const formData = await request.formData()
+  const quoteId = formData.get('quoteId')
   const intent = formData.get('intent')
 
   console.log('action', intent)
 
   if (intent === 'favorite') {
-    // await toggleFavorite()
-    console.log(formData.get('quoteId'))
-    console.log(formData.get('userId'))
+    await toggleFavorite(userId, Number(quoteId))
+    // return 200
+    return redirect(`/books/${params.bookId}`)
   }
 
   return { message: 'Hello World' }
@@ -76,18 +74,11 @@ const CopyButton = ({ content }: { content: string }) => {
 }
 
 const BookPage = () => {
-  const { book } = useLoaderData<typeof loader>()
-  const { bookId } = useParams()
+  const { book, favorites } = useLoaderData<typeof loader>()
   const [loading, setLoading] = useState({} as any)
   const [hideDisabled, setHideDisabled] = useState(false)
   const navigate = useNavigate()
   const submit = useSubmit()
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-    submit(formData, { method: 'post' })
-  }
 
   // const setEditBookModalState = useSetAtom(modalStateAtom('editBook'))
   // const setEditQuoteModalState = useSetAtom(modalStateAtom('editQuote'))
@@ -101,16 +92,13 @@ const BookPage = () => {
   //   }
   // }
 
-  const handleCopy = _.debounce(() => {
-    navigator.clipboard.writeText(content)
-    toast.success('Copied!')
-  }, 300)
+  console.log(favorites)
 
   return (
     <div className='w-full columns-3 overflow-y-auto'>
       {book?.quotes.map(({ content, id, quotee, deleted, createdAt }) =>
         deleted && hideDisabled ? null : (
-          <Form key={id} method='post' onSubmit={handleSubmit}>
+          <Form key={id} method='post'>
             <div
               className={cn(
                 'flex p-6 pr-3 border-b border-r break-inside-avoid group',
@@ -144,7 +132,7 @@ const BookPage = () => {
                   <Heart
                     className={cn('shrink-0')}
                     size={12}
-                    // fill={favorites?.includes(id) ? 'red' : 'none'}
+                    fill={favorites.includes(id) ? 'red' : 'none'}
                   />
                 </Button>
                 <Button

@@ -7,15 +7,8 @@ import { ArrowLeftRight, PlusIcon, SmileIcon, UploadIcon } from 'lucide-react'
 import { Tooltip } from './ui/tooltip'
 
 const Header = ({ user }: { user: User }) => {
-  // console.log(useLoaderData())
-  // const { user } = { name: 'b' }
-  // const { user } = useLoaderData<typeof loader>()
   const { pathname } = useLocation()
-
-  console.log(user)
-
   // const { handleUpload, dummyRequest } = useFileUpload()
-  // const location = window.location.pathname
   const setEditQuoteModalState = useSetAtom(modalStateAtom('editQuote'))
 
   return (
