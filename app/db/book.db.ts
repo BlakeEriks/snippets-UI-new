@@ -21,3 +21,5 @@ export const getBooks = (userId: number) =>
       },
     })
     .then(books => books.filter(book => book.quotes.length > 0))
+
+export type Books = Awaited<ReturnType<typeof getBooks>>

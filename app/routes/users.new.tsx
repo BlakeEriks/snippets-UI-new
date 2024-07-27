@@ -10,29 +10,28 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createUser } from '@/db/user.db'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { User } from '@prisma/client'
 import { ActionFunctionArgs, json } from '@remix-run/node'
 import { Form, useNavigate } from '@remix-run/react'
 import { getValidatedFormData, useRemixForm } from 'remix-hook-form'
 import { redirectWithSuccess } from 'remix-toast'
 import { z } from 'zod'
 
-const schema = z.object({
+const NewUserSchema = z.object({
   name: z.string().min(2, {
     message: 'Name must be at least 2 characters.',
   }),
 })
 
-type FormData = z.infer<typeof schema>
+type NewUserFormData = z.infer<typeof NewUserSchema>
 
-const resolver = zodResolver(schema)
+const resolver = zodResolver(NewUserSchema)
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const {
     errors,
     data,
     receivedValues: defaultValues,
-  } = await getValidatedFormData<FormData>(request, resolver)
+  } = await getValidatedFormData<NewUserFormData>(request, resolver)
 
   if (errors) {
     return json({ errors, defaultValues })
@@ -51,7 +50,7 @@ const NewUserRoute = () => {
     handleSubmit,
     register,
     formState: { errors },
-  } = useRemixForm<Partial<User>>({
+  } = useRemixForm<NewUserFormData>({
     mode: 'onSubmit',
   })
   const navigate = useNavigate()

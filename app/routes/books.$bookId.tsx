@@ -4,7 +4,15 @@ import { getFavorites, toggleDeleted, toggleFavorite } from '@/db/quote.db'
 import { cn } from '@/lib/styles'
 import { requireUserId } from '@/session.server'
 import { ActionFunction, LoaderFunctionArgs } from '@remix-run/node'
-import { Form, json, redirect, useLoaderData, useNavigate, useSubmit } from '@remix-run/react'
+import {
+  Form,
+  Outlet,
+  json,
+  redirect,
+  useLoaderData,
+  useNavigate,
+  useSubmit,
+} from '@remix-run/react'
 import _ from 'lodash'
 import { Copy, Edit2, Heart, Undo2, X } from 'lucide-react'
 import { useCallback, useState } from 'react'
@@ -138,10 +146,12 @@ const BookPage = () => {
                   />
                 </Button>
                 <Button
+                  type='button'
                   variant='ghost'
                   size='sm'
                   disabled={loading[id]}
                   // onClick={() => setEditQuoteModalState({ id, quotee, content, bookId })}
+                  onClick={() => navigate(`./quotes/${id}`)}
                   className='opacity-50 hover:opacity-80 transition-all scale-110'
                 >
                   <Edit2 className='shrink-0' size={12} />
@@ -168,6 +178,7 @@ const BookPage = () => {
           </Form>
         )
       )}
+      <Outlet />
     </div>
   )
 }
