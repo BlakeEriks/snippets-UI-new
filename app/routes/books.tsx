@@ -55,7 +55,7 @@ const Books = () => {
   // const setEditBookModalState = useSetAtom(modalStateAtom('editBook'))
   // const setEditQuoteModalState = useSetAtom(modalStateAtom('editQuote'))
   // const { save } = useQuoteApi()
-  const [loading, setLoading] = useState({} as any)
+  // const [loading, setLoading] = useState({} as any)
   const [hideDisabled, setHideDisabled] = useState(false)
   // const { favorites, addFavorite, removeFavorite } = useUserApi()
   const { bookId } = useParams()

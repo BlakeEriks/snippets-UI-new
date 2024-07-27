@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button'
 import { getBooks } from '@/db/book.db'
 import { cn } from '@/lib/styles'
 import { requireUserId } from '@/session.server'
-import userAtom from '@/state/user'
 import { ActionFunction, LoaderFunctionArgs } from '@remix-run/node'
 import {
   Form,
@@ -13,9 +12,10 @@ import {
   useParams,
   useSubmit,
 } from '@remix-run/react'
-import { useAtomValue } from 'jotai'
+import _ from 'lodash'
 import { Copy, Edit2, Heart, Undo2, X } from 'lucide-react'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
+import toast from 'react-hot-toast'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
@@ -50,6 +50,31 @@ export const action: ActionFunction = async ({ request, params }) => {
   return { message: 'Hello World' }
 }
 
+const CopyButton = ({ content }: { content: string }) => {
+  const handleCopy = useCallback(
+    _.debounce(
+      () => {
+        navigator.clipboard.writeText(content)
+        toast.success('Copied!')
+      },
+      500,
+      { leading: true }
+    ),
+    []
+  )
+
+  return (
+    <Button
+      variant='ghost'
+      size='sm'
+      onClick={handleCopy}
+      className='opacity-50 hover:opacity-80 transition-all scale-110'
+    >
+      <Copy className='shrink-0' size={12} />
+    </Button>
+  )
+}
+
 const BookPage = () => {
   const { book } = useLoaderData<typeof loader>()
   const { bookId } = useParams()
@@ -57,12 +82,10 @@ const BookPage = () => {
   const [hideDisabled, setHideDisabled] = useState(false)
   const navigate = useNavigate()
   const submit = useSubmit()
-  const user = useAtomValue(userAtom)!
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
-    formData.append('userId', user.id.toString())
     submit(formData, { method: 'post' })
   }
 
@@ -77,6 +100,11 @@ const BookPage = () => {
   //     addFavorite(quoteId)
   //   }
   // }
+
+  const handleCopy = _.debounce(() => {
+    navigator.clipboard.writeText(content)
+    toast.success('Copied!')
+  }, 300)
 
   return (
     <div className='w-full columns-3 overflow-y-auto'>
@@ -128,18 +156,7 @@ const BookPage = () => {
                 >
                   <Edit2 className='shrink-0' size={12} />
                 </Button>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  disabled={loading[id]}
-                  onClick={() => {
-                    navigator.clipboard.writeText(content)
-                    // toast.success('Copied!')
-                  }}
-                  className='opacity-50 hover:opacity-80 transition-all scale-110'
-                >
-                  <Copy className='shrink-0' size={12} />
-                </Button>
+                <CopyButton content={content} />
                 <Button
                   variant='ghost'
                   size='sm'
