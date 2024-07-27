@@ -68,6 +68,19 @@ export const saveSnippetsDotTxt = async (quotes: Quote[]) => {
   return results.filter(Boolean)
 }
 
+export const saveQuote = async (quote: Prisma.QuoteUncheckedCreateInput) => {
+  const { id, ...data } = quote
+  const { update, create } = prisma.quote
+  return id ? update({ where: { id }, data }) : create({ data })
+}
+
+export const toggleDeleted = async (quoteId: number) => {
+  const quote = await prisma.quote.findUnique({ where: { id: quoteId } })
+  if (!quote) throw new Error('Quote not found')
+
+  return saveQuote({ ...quote, deleted: !quote.deleted })
+}
+
 export const getFavorites = (userId: number) =>
   prisma.userFavorite
     .findMany({
@@ -82,33 +95,16 @@ export const getFavorites = (userId: number) =>
 
 export const toggleFavorite = async (userId: number, quoteId: number) => {
   const favorite = await prisma.userFavorite.findUnique({
-    where: {
-      userId_quoteId: {
-        userId,
-        quoteId,
-      },
-    },
+    where: { userId_quoteId: { userId, quoteId } },
   })
+  const removeFavorite = () =>
+    prisma.userFavorite.delete({
+      where: { userId_quoteId: { userId, quoteId } },
+    })
+  const addFavorite = () =>
+    prisma.userFavorite.create({
+      data: { userId, quoteId },
+    })
 
-  const method = favorite ? removeFavorite : addFavorite
-
-  return method(userId, quoteId)
+  return (favorite ? removeFavorite : addFavorite)()
 }
-
-const removeFavorite = async (userId: number, quoteId: number) =>
-  prisma.userFavorite.delete({
-    where: {
-      userId_quoteId: {
-        userId,
-        quoteId,
-      },
-    },
-  })
-
-const addFavorite = async (userId: number, quoteId: number) =>
-  prisma.userFavorite.create({
-    data: {
-      userId,
-      quoteId,
-    },
-  })

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { getBooks } from '@/db/book.db'
-import { getFavorites, toggleFavorite } from '@/db/quote.db'
+import { getFavorites, toggleDeleted, toggleFavorite } from '@/db/quote.db'
 import { cn } from '@/lib/styles'
 import { requireUserId } from '@/session.server'
 import { ActionFunction, LoaderFunctionArgs } from '@remix-run/node'
@@ -34,14 +34,17 @@ export const action: ActionFunction = async ({ request, params }) => {
   const userId = await requireUserId(request)
 
   const formData = await request.formData()
-  const quoteId = formData.get('quoteId')
+  const quoteId = Number(formData.get('quoteId'))
   const intent = formData.get('intent')
 
   console.log('action', intent)
 
   if (intent === 'favorite') {
     await toggleFavorite(userId, Number(quoteId))
-    // return 200
+    return redirect(`/books/${params.bookId}`)
+  }
+  if (intent === 'delete') {
+    await toggleDeleted(Number(quoteId))
     return redirect(`/books/${params.bookId}`)
   }
 
@@ -120,7 +123,6 @@ const BookPage = () => {
               </div>
               <div className='flex flex-col justify-center'>
                 <Button
-                  type='submit'
                   name='intent'
                   value='favorite'
                   variant='ghost'
@@ -146,6 +148,8 @@ const BookPage = () => {
                 </Button>
                 <CopyButton content={content} />
                 <Button
+                  name='intent'
+                  value='delete'
                   variant='ghost'
                   size='sm'
                   disabled={loading[id]}
