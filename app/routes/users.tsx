@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { getUsers } from '@/db/user.db'
 import { createUserSession } from '@/session.server'
 import { User } from '@prisma/client'
-import { ActionFunction, LoaderFunction, json } from '@remix-run/node' // or cloudflare/deno
+import { ActionFunction, LoaderFunction, json } from '@remix-run/node'
 import { Form, Link, Outlet, useLoaderData } from '@remix-run/react'
 import invariant from 'tiny-invariant'
 
@@ -22,18 +22,8 @@ export const action: ActionFunction = async ({ request }) => {
   })
 }
 
-export default function Index() {
+const Users = () => {
   const users = useLoaderData<typeof loader>()
-  // const setUser = useSetAtom(userAtom)
-  // const navigate = useNavigate()
-
-  // const selectUser = (id: number) => {
-  //   const user = _.find(users, { id })
-  //   if (user) {
-  //     setUser(user)
-  //     navigate('/books')
-  //   }
-  // }
 
   return (
     <>
@@ -65,3 +55,5 @@ export default function Index() {
     </>
   )
 }
+
+export default Users

@@ -32,9 +32,11 @@ const QuoteSchema = z.object({
   content: z.string().min(2, {
     message: 'Quote content must be at least 2 characters.',
   }),
-  quotee: z.string().min(2, {
-    message: 'Quotee must be at least 2 characters.',
-  }),
+  quotee: z
+    .string()
+    .min(2, { message: 'Quotee must be at least 2 characters.' })
+    .optional()
+    .or(z.literal('')),
   bookId: z
     .number({
       required_error: 'Please select a book',
@@ -136,7 +138,7 @@ const EditQuoteRoute = () => {
                 </Select>
               )}
             />
-            {errors.quotee && <p className='text-red-500'>{errors.quotee.message}</p>}
+            {errors.bookId && <p className='text-red-500'>{errors.bookId.message}</p>}
           </Label>
           <DialogFooter>
             <Button>Save</Button>

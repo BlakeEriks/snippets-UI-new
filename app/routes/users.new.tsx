@@ -45,7 +45,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 }
 
-const NewUserRoute = () => {
+const NewUser = () => {
   const {
     handleSubmit,
     register,
@@ -76,4 +76,4 @@ const NewUserRoute = () => {
   )
 }
 
-export default NewUserRoute
+export default NewUser

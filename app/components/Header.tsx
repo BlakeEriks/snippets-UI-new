@@ -1,15 +1,13 @@
 import { cn } from '@/lib/styles'
-import { modalStateAtom } from '@/state/modal'
 import { User } from '@prisma/client'
-import { Link, useLocation } from '@remix-run/react'
-import { useSetAtom } from 'jotai'
+import { Link, useLocation, useNavigate } from '@remix-run/react'
 import { ArrowLeftRight, PlusIcon, SmileIcon, UploadIcon } from 'lucide-react'
 import { Tooltip } from './ui/tooltip'
 
 const Header = ({ user }: { user: User }) => {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   // const { handleUpload, dummyRequest } = useFileUpload()
-  const setEditQuoteModalState = useSetAtom(modalStateAtom('editQuote'))
 
   return (
     <header className='flex flex-row w-full justify-between py-2 px-4 border-b'>
@@ -35,7 +33,7 @@ const Header = ({ user }: { user: User }) => {
           {/* </Button> */}
           {/* </Upload> */}
         </Tooltip>
-        <Tooltip content='Add Quote' onClick={() => setEditQuoteModalState({})}>
+        <Tooltip content='Add Quote' onClick={() => navigate('/quotes/new')}>
           <PlusIcon />
         </Tooltip>
         <Link to='users'>

@@ -10,11 +10,8 @@ import { requireUserId } from '@/session.server'
 import { LoaderFunction } from '@remix-run/node'
 import { Link, Outlet, json, redirect, useLoaderData, useRouteError } from '@remix-run/react'
 import _ from 'lodash'
-// import useQuoteApi from 'api/quote'
-// import useUserApi from 'api/user'
 import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-// import { modalStateAtom } from 'state/modal'
+import { useParams } from 'react-router-dom'
 
 type LoaderData = {
   books: Awaited<ReturnType<typeof getBooks>>
@@ -51,27 +48,9 @@ export function ErrorBoundary() {
 const Books = () => {
   const { books } = useLoaderData() as unknown as LoaderData
   // const setEditBookModalState = useSetAtom(modalStateAtom('editBook'))
-  // const setEditQuoteModalState = useSetAtom(modalStateAtom('editQuote'))
-  // const { save } = useQuoteApi()
   // const [loading, setLoading] = useState({} as any)
   const [hideDisabled, setHideDisabled] = useState(false)
-  // const { favorites, addFavorite, removeFavorite } = useUserApi()
   const { bookId } = useParams()
-  const navigate = useNavigate()
-
-  // const toggleFavorite = (quoteId: number) => {
-  //   if (favorites?.includes(quoteId)) {
-  //     removeFavorite(quoteId)
-  //   } else {
-  //     addFavorite(quoteId)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (!bookId && books) {
-  //     navigate(`${first(books)?.id}`)
-  //   }
-  // }, [bookId, books])
 
   return (
     <div className='flex h-[calc(100vh-57px)]'>
