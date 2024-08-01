@@ -1,12 +1,11 @@
 import { cn } from '@/lib/styles'
 import { User } from '@prisma/client'
-import { Link, useLocation, useNavigate } from '@remix-run/react'
+import { Link, useLocation } from '@remix-run/react'
 import { ArrowLeftRight, PlusIcon, SmileIcon, UploadIcon } from 'lucide-react'
 import { Tooltip } from './ui/tooltip'
 
 const Header = ({ user }: { user: User }) => {
   const { pathname } = useLocation()
-  const navigate = useNavigate()
   // const { handleUpload, dummyRequest } = useFileUpload()
 
   return (
@@ -33,8 +32,10 @@ const Header = ({ user }: { user: User }) => {
           {/* </Button> */}
           {/* </Upload> */}
         </Tooltip>
-        <Tooltip content='Add Quote' onClick={() => navigate('/quotes/new')}>
-          <PlusIcon />
+        <Tooltip content='Add Quote' asChild>
+          <Link to='quotes/new'>
+            <PlusIcon />
+          </Link>
         </Tooltip>
         <Link to='users'>
           <Tooltip content='Change User'>
