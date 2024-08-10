@@ -75,7 +75,7 @@ export const saveQuote = async (quote: Prisma.QuoteUncheckedCreateInput) => {
 }
 
 export const toggleDeleted = async (quoteId: number) => {
-  const quote = await prisma.quote.findUnique({ where: { id: quoteId } })
+  const quote = await getQuoteById(quoteId)
   if (!quote) throw new Error('Quote not found')
 
   return saveQuote({ ...quote, deleted: !quote.deleted })
@@ -108,3 +108,5 @@ export const toggleFavorite = async (userId: number, quoteId: number) => {
 
   return (favorite ? removeFavorite : addFavorite)()
 }
+
+export const getQuoteById = (quoteId: number) => prisma.quote.findUnique({ where: { id: quoteId } })

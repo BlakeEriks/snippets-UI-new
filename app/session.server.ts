@@ -32,7 +32,7 @@ export async function getUserId(request: Request): Promise<User['id'] | undefine
 
 export async function getUser(request: Request) {
   const userId = await getUserId(request)
-  if (userId === undefined) return null
+  if (!userId) return null
 
   const user = await getUserById(userId)
   if (user) return user

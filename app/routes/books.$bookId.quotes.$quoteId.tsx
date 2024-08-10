@@ -1,4 +1,4 @@
-import QuoteForm, { QuoteFormData, QuoteSchema } from '@/components/QuoteForm'
+import QuoteForm from '@/components/QuoteForm'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -9,34 +9,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { getBooks } from '@/db/book.db'
-import { saveQuote } from '@/db/quote.db'
 import { requireUserId } from '@/session.server'
 import { superjson, useSuperLoaderData } from '@/utils/data'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node'
+import { handleQuoteAction } from '@/utils/quoteAction'
+import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node'
 import { useNavigate } from '@remix-run/react'
-import { getValidatedFormData } from 'remix-hook-form'
-import { redirectWithSuccess } from 'remix-toast'
 
-export const action = async ({ request, params: { quoteId } }: ActionFunctionArgs) => {
-  const userId = await requireUserId(request)
-  const {
-    errors,
-    data,
-    receivedValues: defaultValues,
-  } = await getValidatedFormData<QuoteFormData>(request, zodResolver(QuoteSchema))
-
-  if (errors) {
-    return superjson({ errors, defaultValues })
-  }
-
-  try {
-    const quote = await saveQuote({ ...data, userId, id: Number(quoteId) })
-    return redirectWithSuccess(`/books/${quote.bookId}`, { message: 'Quote updated!' })
-  } catch (error) {
-    return json({ errorMessage: 'Failed to save quote' }, { status: 400 })
-  }
-}
+export const action = async ({ request, params: { quoteId } }: ActionFunctionArgs) =>
+  handleQuoteAction(request, () => '../..', quoteId)
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)

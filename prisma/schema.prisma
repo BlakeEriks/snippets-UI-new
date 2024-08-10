@@ -18,7 +18,6 @@ model Quote {
   userId       Int
   tags         Tag[]
   deleted      Boolean        @default(false)
-  staged       Boolean        @default(false)
   book         Book?          @relation(fields: [bookId], references: [id])
   bookId       Int?
   userFavorite UserFavorite[] @relation("UserFavorites") // Many-to-many relation through UserFavorite

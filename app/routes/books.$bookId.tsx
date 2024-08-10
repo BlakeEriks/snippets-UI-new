@@ -6,6 +6,7 @@ import { requireUserId } from '@/session.server'
 import { ActionFunction, LoaderFunctionArgs } from '@remix-run/node'
 import {
   Form,
+  Link,
   Outlet,
   json,
   redirect,
@@ -44,8 +45,6 @@ export const action: ActionFunction = async ({ request, params }) => {
   const formData = await request.formData()
   const quoteId = Number(formData.get('quoteId'))
   const intent = formData.get('intent')
-
-  console.log('action', intent)
 
   if (intent === 'favorite') {
     await toggleFavorite(userId, Number(quoteId))
@@ -116,7 +115,7 @@ const BookPage = () => {
                 loading[id] && 'opacity-50'
               )}
             >
-              <div className='my-auto flex-1'>
+              <Link to={`/quotes/${id}`} className='my-auto flex-1'>
                 <div className='flex items-center mb-2' key={id}>
                   <span
                     className={cn('italic text-sm flex-1', deleted && 'line-through opacity-50')}
@@ -128,7 +127,7 @@ const BookPage = () => {
                   <span>{new Date(createdAt).toLocaleDateString()}</span>
                   {quotee && <div>{quotee}</div>}
                 </div>
-              </div>
+              </Link>
               <div className='flex flex-col justify-center'>
                 <Button
                   name='intent'

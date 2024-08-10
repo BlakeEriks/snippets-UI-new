@@ -3,13 +3,17 @@ import { Button } from '@/components/ui/button'
 import { getBooks } from '@/db/book.db'
 import { requireUserId } from '@/session.server'
 import { superjson, useSuperLoaderData } from '@/utils/data'
-import { LoaderFunctionArgs } from '@remix-run/node'
+import { handleQuoteAction } from '@/utils/quoteAction'
+import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node'
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request)
   const books = await getBooks(userId)
   return superjson({ books })
 }
+
+export const action = async ({ request }: ActionFunctionArgs) =>
+  handleQuoteAction(request, quoteId => `/quotes/${quoteId}`)
 
 const NewQuote = () => {
   const { books } = useSuperLoaderData<typeof loader>()

@@ -1,32 +1,12 @@
 import { Books } from '@/db/book.db'
+import { QuoteFormData } from '@/utils/quoteAction'
 import { Form } from '@remix-run/react'
 import { Controller } from 'react-hook-form'
 import { useRemixForm } from 'remix-hook-form'
-import { z } from 'zod'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Textarea } from './ui/textarea'
-
-export const QuoteSchema = z.object({
-  content: z.string().min(2, {
-    message: 'Quote content must be at least 2 characters.',
-  }),
-  quotee: z
-    .string()
-    .min(2, { message: 'Quotee must be at least 2 characters.' })
-    .nullable()
-    .or(z.literal('')),
-  bookId: z
-    .number({
-      required_error: 'Please select a book',
-      invalid_type_error: 'Book ID must be a number',
-    })
-    .int()
-    .nullable(),
-})
-
-export type QuoteFormData = z.infer<typeof QuoteSchema>
 
 const QuoteForm = ({ quote, books }: { quote?: QuoteFormData; books: Books }) => {
   const {
@@ -61,7 +41,7 @@ const QuoteForm = ({ quote, books }: { quote?: QuoteFormData; books: Books }) =>
           name='bookId'
           control={control}
           render={({ field }) => (
-            <Select onValueChange={field.onChange} value={String(field.value)}>
+            <Select onValueChange={id => field.onChange(Number(id))} value={String(field.value)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
