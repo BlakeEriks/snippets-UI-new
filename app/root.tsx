@@ -62,7 +62,9 @@ export default function Root() {
   return (
     <App>
       <Header user={user} />
-      <Outlet />
+      <div className='p-4'>
+        <Outlet />
+      </div>
       <Toaster />
     </App>
   )

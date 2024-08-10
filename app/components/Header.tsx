@@ -6,7 +6,6 @@ import { Tooltip } from './ui/tooltip'
 
 const Header = ({ user }: { user: User }) => {
   const { pathname } = useLocation()
-  // const { handleUpload, dummyRequest } = useFileUpload()
 
   return (
     <header className='flex flex-row w-full justify-between py-2 px-4 border-b'>
@@ -20,18 +19,11 @@ const Header = ({ user }: { user: User }) => {
           <ArrowLeftRight />
           {/* </Link> */}
         </Tooltip>
-        <Tooltip content='Upload Snippets'>
-          {/* <Upload
-            beforeUpload={handleUpload}
-            name='file'
-            customRequest={dummyRequest}
-            showUploadList={false}
-          > */}
-          {/* <Button className=''> */}
-          <UploadIcon />
-          {/* </Button> */}
-          {/* </Upload> */}
-        </Tooltip>
+        <Link to='/upload-snippets'>
+          <Tooltip content='Upload Snippets'>
+            <UploadIcon />
+          </Tooltip>
+        </Link>
         <Tooltip content='Add Quote' asChild>
           <Link to='quotes/new'>
             <PlusIcon />
