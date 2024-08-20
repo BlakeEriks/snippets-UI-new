@@ -13,6 +13,5 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
 export default function Index() {
-  console.log('index')
   return <Outlet />
 }

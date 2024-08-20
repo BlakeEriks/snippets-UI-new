@@ -47,33 +47,34 @@ export function ErrorBoundary() {
 
 const Books = () => {
   const { books } = useLoaderData() as unknown as LoaderData
-  // const setEditBookModalState = useSetAtom(modalStateAtom('editBook'))
-  // const [loading, setLoading] = useState({} as any)
   const [hideDisabled, setHideDisabled] = useState(false)
   const { bookId } = useParams()
 
   return (
-    <div className='flex h-[calc(100vh-57px)]'>
-      <div className='h-full border-r'>
-        <h2 className='text-center text-xl border-b p-2'>Books</h2>
-        <NavigationMenu className='p-2'>
-          <NavigationMenuList className='flex-col'>
+    <div className='flex flex-1 overflow-y-auto'>
+      <div className='flex flex-col w-[300px] border-r'>
+        <h2 className='text-center text-xl font-bold border-b p-2'>Books</h2>
+        <NavigationMenu className='p-2 flex-1 overflow-y-auto'>
+          <NavigationMenuList className='flex-col h-full items-start space-y-1 overflow-y-auto'>
             {books.map(({ id, title }) => (
               <NavigationMenuItem
                 key={id}
-                className={cn('py-1', id === Number(bookId) ? 'text-white' : 'text-gray-300')}
+                className={cn(
+                  'py-1 w-full hover:bg-accent hover:text-accent-foreground transition-colors',
+                  id === Number(bookId) && 'bg-accent text-accent-foreground'
+                )}
               >
                 <NavigationMenuLink asChild>
-                  <Link to={`./${id}`}>{title}</Link>
+                  <Link to={`./${id}`} className='block leading-6'>
+                    {title}
+                  </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
             ))}
           </NavigationMenuList>
         </NavigationMenu>
       </div>
-      <div className='flex-1'>
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   )
 }

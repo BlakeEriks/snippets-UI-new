@@ -8,7 +8,7 @@ const Header = ({ user }: { user: User }) => {
   const { pathname } = useLocation()
 
   return (
-    <header className='flex flex-row w-full justify-between py-2 px-4 border-b'>
+    <header className='flex flex-row w-full justify-between py-2 px-4 border-b-2'>
       <Link to='/books' className={cn('flex', pathname.includes('books') && 'pointer-events-none')}>
         <h1 className='text-4xl italic font-semibold'>Quotes</h1>
         <h1 className='text-4xl italic font-light opacity-50'> - the app</h1>

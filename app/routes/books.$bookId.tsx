@@ -4,16 +4,7 @@ import { getFavorites, toggleDeleted, toggleFavorite } from '@/db/quote.db'
 import { cn } from '@/lib/styles'
 import { requireUserId } from '@/session.server'
 import { ActionFunction, LoaderFunctionArgs } from '@remix-run/node'
-import {
-  Form,
-  Link,
-  Outlet,
-  json,
-  redirect,
-  useLoaderData,
-  useNavigate,
-  useSubmit,
-} from '@remix-run/react'
+import { Form, Link, Outlet, json, redirect, useLoaderData, useNavigate } from '@remix-run/react'
 import _ from 'lodash'
 import { Copy, Edit2, Heart, Undo2, X } from 'lucide-react'
 import { useCallback, useState } from 'react'
@@ -55,7 +46,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     return redirect(`/books/${params.bookId}`)
   }
 
-  return { message: 'Hello World' }
+  return redirect(`/books/${params.bookId}`)
 }
 
 const CopyButton = ({ content }: { content: string }) => {
@@ -88,30 +79,15 @@ const BookPage = () => {
   const [loading, setLoading] = useState({} as any)
   const [hideDisabled, setHideDisabled] = useState(false)
   const navigate = useNavigate()
-  const submit = useSubmit()
-
-  // const setEditBookModalState = useSetAtom(modalStateAtom('editBook'))
-  // const setEditQuoteModalState = useSetAtom(modalStateAtom('editQuote'))
-  // const { save } = useQuoteApi()
-  // const { favorites, addFavorite, removeFavorite } = useUserApi()
-  // const toggleFavorite = (quoteId: number) => {
-  //   if (favorites?.includes(quoteId)) {
-  //     removeFavorite(quoteId)
-  //   } else {
-  //     addFavorite(quoteId)
-  //   }
-  // }
-
-  console.log(favorites)
 
   return (
-    <div className='w-full columns-3 overflow-y-auto'>
+    <div className='flex flex-1 flex-wrap overflow-y-auto'>
       {book?.quotes.map(({ content, id, quotee, deleted, createdAt }) =>
         deleted && hideDisabled ? null : (
-          <Form key={id} method='post'>
+          <Form key={id} method='post' className='flex w-[50%]'>
             <div
               className={cn(
-                'flex p-6 pr-3 border-b border-r break-inside-avoid group',
+                'flex flex-1 p-6 pr-3 border-b border-r break-inside-avoid group',
                 loading[id] && 'opacity-50'
               )}
             >
@@ -135,7 +111,6 @@ const BookPage = () => {
                   variant='ghost'
                   size='sm'
                   disabled={loading[id]}
-                  // onClick={() => toggleFavorite(id)}
                   className='opacity-50 hover:opacity-80 transition-all scale-110'
                 >
                   <Heart
@@ -149,7 +124,6 @@ const BookPage = () => {
                   variant='ghost'
                   size='sm'
                   disabled={loading[id]}
-                  // onClick={() => setEditQuoteModalState({ id, quotee, content, bookId })}
                   onClick={() => navigate(`./quotes/${id}`)}
                   className='opacity-50 hover:opacity-80 transition-all scale-110'
                 >
@@ -162,7 +136,6 @@ const BookPage = () => {
                   variant='ghost'
                   size='sm'
                   disabled={loading[id]}
-                  // onClick={() => toggleDisabled(id)}
                   className='opacity-50 hover:opacity-80 transition-all scale-110'
                 >
                   {deleted ? (

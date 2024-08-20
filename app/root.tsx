@@ -61,11 +61,11 @@ export default function Root() {
 
   return (
     <App>
-      <Header user={user} />
-      <div className='p-4'>
+      <div className='flex flex-col h-[100vh]'>
+        <Header user={user} />
         <Outlet />
+        <Toaster />
       </div>
-      <Toaster />
     </App>
   )
 }
