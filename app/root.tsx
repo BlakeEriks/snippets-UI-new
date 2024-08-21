@@ -63,8 +63,42 @@ export default function Root() {
     <App>
       <div className='flex flex-col h-[100vh]'>
         <Header user={user} />
-        <Outlet />
-        <Toaster />
+        <div className='flex py-2'>
+          <nav className='flex flex-col gap-1 px-2 w-64 border-r'>
+            <Link
+              to='/books'
+              className={cn(
+                buttonVariants({ variant: 'default' }),
+                'flex dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white'
+              )}
+            >
+              <Book />
+              <span>Books</span>
+            </Link>
+            <Link to='/quotes' className={cn(buttonVariants({ variant: 'default' }), 'flex')}>
+              <Quote />
+              Quotes
+            </Link>
+            <Link to='/upload-snippets'>Upload Snippets</Link>
+          </nav>
+          {/* <NavigationMenu className='p-2 flex-1 overflow-y-auto'>
+            <NavigationMenuList className='flex flex-col h-full items-start space-y-1 overflow-y-auto'>
+              <NavigationMenuItem
+                // key={id}
+                className={cn(
+                  'py-1 w-full hover:bg-accent hover:text-accent-foreground transition-colors'
+                )}
+              >
+                <NavigationMenuLink asChild>
+                  <Link to='/books' className='block leading-6'>
+                    Quotes
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu> */}
+          <Outlet />
+        </div>
       </div>
     </App>
   )
