@@ -1,4 +1,5 @@
 import {
+  Link,
   Links,
   Meta,
   Outlet,
@@ -12,11 +13,14 @@ import {
 import { ThemeSwitcherSafeHTML, ThemeSwitcherScript } from '@/components/theme-switcher'
 
 import { LoaderFunction, json } from '@remix-run/node'
+import { Book, Quote } from 'lucide-react'
 import { useEffect } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 import { getToast } from 'remix-toast'
 import Header from './components/Header'
+import { buttonVariants } from './components/ui/button'
 import './globals.css'
+import { cn } from './lib/styles'
 import { getUser } from './session.server'
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -38,6 +42,7 @@ function App({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration />
         <Scripts />
+        <Toaster />
       </body>
     </ThemeSwitcherSafeHTML>
   )
